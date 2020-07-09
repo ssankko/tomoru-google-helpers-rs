@@ -88,13 +88,12 @@ fn place_in_src() {
 
     match result {
         Err(e) => {
-            eprintln!("error running rustfmt: {:?}", e);
-            exit(1)
+            println!("error running rustfmt: {:?}", e);
         }
         Ok(output) => {
             if !output.status.success() {
                 let err = String::from_utf8(output.stderr).unwrap();
-                panic!(err);
+                println!("rustfmt returned unsuccessful status: {}", err);
             }
         }
     }
