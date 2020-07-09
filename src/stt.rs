@@ -1,4 +1,5 @@
 crate::service!("speech", "https://www.googleapis.com/auth/cloud-platform");
+pub use crate::generated::google::cloud::speech::v1::RecognitionConfig;
 use crate::generated::google::cloud::speech::v1::*;
 
 fn default_config() -> RecognitionConfig {
@@ -24,14 +25,14 @@ fn default_config() -> RecognitionConfig {
     }
 }
 
-pub async fn recognize(uri: String) -> Option<String> {
+pub async fn recognize(uri: String, config: Option<RecognitionConfig>) -> Option<String> {
     let stt = SERVICE.get().unwrap();
-
+    let config = config.unwrap_or_else(default_config);
     // --------------------------------
     // construct request
     // --------------------------------
     let request = RecognizeRequest {
-        config: Some(default_config()),
+        config: Some(config),
         audio: Some(RecognitionAudio {
             audio_source: Some(recognition_audio::AudioSource::Uri(uri)),
         }),

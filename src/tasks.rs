@@ -21,9 +21,9 @@ impl<'a> QueueSettings<'a> {
 }
 
 pub struct TaskData<'a> {
-    url: String,
-    body: Vec<u8>,
-    queue: QueueSettings<'a>,
+    pub url: String,
+    pub body: Vec<u8>,
+    pub queue: QueueSettings<'a>,
 }
 
 pub async fn create_task<'a>(task: TaskData<'a>) -> Result<(), tonic::Status> {

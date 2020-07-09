@@ -4,35 +4,50 @@ crate::service!(
 );
 
 use crate::generated::google::cloud::texttospeech::v1::*;
+pub use crate::generated::google::cloud::texttospeech::v1::{AudioConfig, VoiceSelectionParams};
 
-pub async fn synthesize(phrase: String) -> Result<Vec<u8>, tonic::Status> {
+fn default_config() -> AudioConfig {
+    AudioConfig {
+        audio_encoding: 1,
+        speaking_rate: 1.2,
+        pitch: 1.0,
+        volume_gain_db: 0.0,
+        sample_rate_hertz: 8000,
+        effects_profile_id: vec![],
+    }
+}
+
+fn default_voice_params() -> VoiceSelectionParams {
+    VoiceSelectionParams {
+        language_code: "ru".to_string(),
+        name: "ru-RU-Wavenet-C".to_string(),
+        // Unspecified
+        ssml_gender: 2,
+    }
+}
+
+pub async fn synthesize(
+    phrase: String,
+    audio_config: Option<AudioConfig>,
+    voice_params: Option<VoiceSelectionParams>,
+) -> Result<Vec<u8>, tonic::Status> {
     let tts = SERVICE.get().unwrap();
+    let audio_config = audio_config.unwrap_or_else(default_config);
+    let voice_params = voice_params.unwrap_or_else(default_voice_params);
 
     // --------------------------------
     // construct request
     // --------------------------------
     println!("[GRPC SYNTHESIZE] trying to synth phrase: {}", phrase);
     let request = SynthesizeSpeechRequest {
-        audio_config: Some(AudioConfig {
-            audio_encoding: 1,
-            speaking_rate: 1.2,
-            pitch: 1.0,
-            volume_gain_db: 0.0,
-            sample_rate_hertz: 8000,
-            effects_profile_id: vec![],
-        }),
+        audio_config: Some(audio_config),
         input: Some(SynthesisInput {
             input_source: Some(synthesis_input::InputSource::Ssml(format!(
                 "<speak>{}</speak>",
                 phrase
             ))),
         }),
-        voice: Some(VoiceSelectionParams {
-            language_code: "ru".to_string(),
-            name: "ru-RU-Wavenet-C".to_string(),
-            // Unspecified
-            ssml_gender: 2,
-        }),
+        voice: Some(voice_params),
     };
 
     // --------------------------------

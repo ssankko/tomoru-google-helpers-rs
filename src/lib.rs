@@ -2,17 +2,17 @@ mod generated;
 #[cfg(feature = "stt")]
 mod stt;
 #[cfg(feature = "stt")]
-pub use stt::recognize;
+pub use stt::*;
 
 #[cfg(feature = "tasks")]
 mod tasks;
 #[cfg(feature = "tasks")]
-pub use tasks::create_task;
+pub use tasks::*;
 
 #[cfg(feature = "tts")]
 mod tts;
 #[cfg(feature = "tts")]
-pub use tts::synthesize;
+pub use tts::*;
 
 #[cfg(feature = "logging")]
 mod logging;
