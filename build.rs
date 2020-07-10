@@ -1,4 +1,4 @@
-use std::{collections::HashMap, process::Command};
+use std::collections::HashMap;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Ok(_) = std::fs::File::open("./src/generated.rs") {
@@ -55,48 +55,32 @@ fn place_in_src() {
 
     // simple recursive function to construct mod tree based on a
     // tree built earlier
-    fn construct(tree_entry: Box<TreeEntry>, result: &mut String, out_dir: &str) {
+    fn construct(tree_entry: Box<TreeEntry>, result: &mut String, out_dir: &str, ident: u32) {
+        let spaces = (0..ident * 4).map(|_| " ").collect::<String>();
         match *tree_entry {
             TreeEntry::Node(node) => {
                 let contents = std::fs::read_to_string(&format!("{}/{}", out_dir, node)).unwrap();
+                // result.push_str(&contents.replace('\n', &format!("\n{}", spaces)));
+                let contents = contents
+                    .lines()
+                    .map(|x| format!("{}{}", spaces, x))
+                    .collect::<Vec<String>>()
+                    .join("\n");
                 result.push_str(&contents);
             }
             TreeEntry::Branch(branch) => {
                 for (name, child) in branch {
-                    result.push_str(&format!("pub mod {} {{", name));
-                    construct(child, result, out_dir);
-                    result.push_str("}");
+                    result.push_str(&format!("{0}pub mod {1} {{\n", spaces, name));
+                    construct(child, result, out_dir, ident + 1);
+                    result.push_str(&format!("\n{}}}\n", spaces));
                 }
             }
         }
     };
 
     let mut result = String::new();
-    construct(Box::new(tree), &mut result, &out_dir);
+    construct(Box::new(tree), &mut result, &out_dir, 0);
     std::fs::write("./src/generated.rs", result).unwrap();
-
-    if std::env::var("NO_FMT_ON_GENERATED").is_err() {
-        let result = Command::new("rustfmt")
-            .arg("--emit")
-            .arg("files")
-            .arg("--edition")
-            .arg("2018")
-            .arg("./src/generated.rs")
-            .output();
-
-        match result {
-            Err(e) => {
-                println!("error running rustfmt: {:?}", e);
-            }
-            Ok(output) => {
-                if !output.status.success() {
-                    let err = String::from_utf8(output.stderr).unwrap();
-                    println!("rustfmt returned unsuccessful status: {}", err);
-                }
-            }
-        }
-    }
-
     std::fs::remove_dir_all(out_dir).unwrap();
 }
 
