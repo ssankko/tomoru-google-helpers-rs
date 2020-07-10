@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    process::{exit, Command},
-};
+use std::{collections::HashMap, process::Command};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Ok(_) = std::fs::File::open("./src/generated.rs") {
@@ -78,25 +75,28 @@ fn place_in_src() {
     construct(Box::new(tree), &mut result, &out_dir);
     std::fs::write("./src/generated.rs", result).unwrap();
 
-    let result = Command::new("rustfmt")
-        .arg("--emit")
-        .arg("files")
-        .arg("--edition")
-        .arg("2018")
-        .arg("./src/generated.rs")
-        .output();
+    let _ = std::thread::spawn(|| {
+        let result = Command::new("rustfmt")
+            .arg("--emit")
+            .arg("files")
+            .arg("--edition")
+            .arg("2018")
+            .arg("./src/generated.rs")
+            .output();
 
-    match result {
-        Err(e) => {
-            println!("error running rustfmt: {:?}", e);
-        }
-        Ok(output) => {
-            if !output.status.success() {
-                let err = String::from_utf8(output.stderr).unwrap();
-                println!("rustfmt returned unsuccessful status: {}", err);
+        match result {
+            Err(e) => {
+                println!("error running rustfmt: {:?}", e);
+            }
+            Ok(output) => {
+                if !output.status.success() {
+                    let err = String::from_utf8(output.stderr).unwrap();
+                    println!("rustfmt returned unsuccessful status: {}", err);
+                }
             }
         }
-    }
+    })
+    .join();
 
     std::fs::remove_dir_all(out_dir).unwrap();
 }
