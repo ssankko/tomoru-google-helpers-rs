@@ -75,7 +75,7 @@ fn place_in_src() {
     construct(Box::new(tree), &mut result, &out_dir);
     std::fs::write("./src/generated.rs", result).unwrap();
 
-    let _ = std::thread::spawn(|| {
+    if std::env::var("NO_FMT_ON_GENERATED").is_err() {
         let result = Command::new("rustfmt")
             .arg("--emit")
             .arg("files")
@@ -95,8 +95,7 @@ fn place_in_src() {
                 }
             }
         }
-    })
-    .join();
+    }
 
     std::fs::remove_dir_all(out_dir).unwrap();
 }
