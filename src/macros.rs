@@ -23,6 +23,7 @@ macro_rules! service {
                 channel: Channel::from_shared(DEFAULT_HOST)
                     .unwrap()
                     .tls_config(tls_config)
+                    .unwrap()
                     .connect()
                     .await
                     .unwrap(),

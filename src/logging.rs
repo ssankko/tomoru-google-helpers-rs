@@ -6,7 +6,7 @@ pub use crate::generated::google::{
     api::MonitoredResource,
     logging::{
         r#type::HttpRequest,
-        v2::{log_entry::Payload, LogEntryOperation, LogEntrySourceLocation},
+        v2::{LogEntryOperation, LogEntrySourceLocation},
     },
 };
 
@@ -28,6 +28,60 @@ impl Into<prost_types::Timestamp> for Timestamp {
         prost_types::Timestamp {
             seconds: self.seconds,
             nanos: self.nanos,
+        }
+    }
+}
+
+pub enum Payload {
+    Text(String),
+    Json(serde_json::Map<String, serde_json::Value>),
+}
+
+fn serde_map_to_proto_fields(
+    map: serde_json::Map<String, serde_json::Value>,
+) -> prost_types::Struct {
+    prost_types::Struct {
+        fields: map
+            .into_iter()
+            .map(|x| {
+                let val = serde_json_value_to_proto_value(x.1);
+                (x.0, val)
+            })
+            .collect(),
+    }
+}
+
+fn serde_json_value_to_proto_value(value: serde_json::Value) -> prost_types::Value {
+    prost_types::Value {
+        kind: Some(match value {
+            serde_json::Value::Null => prost_types::value::Kind::NullValue(0),
+            serde_json::Value::Bool(v) => prost_types::value::Kind::BoolValue(v),
+            serde_json::Value::Number(v) => {
+                prost_types::value::Kind::NumberValue(v.as_f64().unwrap())
+            }
+            serde_json::Value::String(v) => prost_types::value::Kind::StringValue(v),
+            serde_json::Value::Array(v) => {
+                prost_types::value::Kind::ListValue(prost_types::ListValue {
+                    values: v
+                        .into_iter()
+                        .map(|x| serde_json_value_to_proto_value(x))
+                        .collect(),
+                })
+            }
+            serde_json::Value::Object(v) => {
+                prost_types::value::Kind::StructValue(serde_map_to_proto_fields(v))
+            }
+        }),
+    }
+}
+
+impl Into<v2::log_entry::Payload> for Payload {
+    fn into(self) -> v2::log_entry::Payload {
+        match self {
+            Payload::Text(text) => v2::log_entry::Payload::TextPayload(text),
+            Payload::Json(map) => {
+                v2::log_entry::Payload::JsonPayload(serde_map_to_proto_fields(map))
+            }
         }
     }
 }
@@ -86,7 +140,7 @@ impl Into<v2::LogEntry> for LogEntry {
             labels: self.labels,
             operation: self.operation,
             source_location: Some(self.source_code_entry),
-            payload: Some(self.payload),
+            payload: Some(self.payload.into()),
             ..Default::default()
         }
     }
