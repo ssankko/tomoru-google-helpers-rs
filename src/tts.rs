@@ -38,7 +38,6 @@ pub async fn synthesize(
     // --------------------------------
     // construct request
     // --------------------------------
-    println!("[GRPC SYNTHESIZE] trying to synth phrase: {}", phrase);
     let request = SynthesizeSpeechRequest {
         audio_config: Some(audio_config),
         input: Some(SynthesisInput {
