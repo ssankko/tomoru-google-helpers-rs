@@ -175,10 +175,10 @@ impl LogContext {
         self
     }
 
-    // pub fn operation(mut self, operation_id: impl Into<String>) -> LogContext {
-    //     self.operation = Some(operation_id.into());
-    //     self
-    // }
+    pub fn operation(mut self, operation_id: impl Into<String>) -> LogContext {
+        self.operation = Some(operation_id.into());
+        self
+    }
 
     pub fn request(mut self, request: impl Into<google::HttpRequest>) -> LogContext {
         self.request = Some(request.into());
@@ -247,25 +247,25 @@ impl LogBuilder {
         self
     }
 
-    // pub fn operation(mut self, operation_id: impl Into<String>) -> LogBuilder {
-    //     self.context.operation = Some(operation_id.into());
-    //     self
-    // }
+    pub fn operation(mut self, operation_id: impl Into<String>) -> LogBuilder {
+        self.context.operation = Some(operation_id.into());
+        self
+    }
 
-    // pub fn first(mut self) -> LogBuilder {
-    //     self.operation_first = true;
-    //     self
-    // }
+    pub fn first(mut self) -> LogBuilder {
+        self.operation_first = true;
+        self
+    }
 
     pub fn request(mut self, request: impl Into<google::HttpRequest>) -> LogBuilder {
         self.context.request = Some(request.into());
         self
     }
 
-    // pub fn last(mut self) -> LogBuilder {
-    //     self.operation_last = true;
-    //     self
-    // }
+    pub fn last(mut self) -> LogBuilder {
+        self.operation_last = true;
+        self
+    }
 
     pub fn send_text(mut self, text: impl Into<String>) {
         self.payload = Some(Payload::Text(text.into()));
