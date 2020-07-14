@@ -1,5 +1,5 @@
 mod google;
-pub(super) use google::*;
+pub use google::*;
 
 use once_cell::sync::OnceCell;
 use std::{collections::HashMap, option::Option, string::String, time::Duration};
@@ -344,6 +344,7 @@ impl LogBuilder {
     }
 }
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! function {
     () => {{
@@ -356,47 +357,48 @@ macro_rules! function {
     }};
 }
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! log {
     ($sev: tt) => {{
         let line = line!() as i64;
         let file = file!();
-        let fn_name = function!();
-        crate::logger::LogBuilder::new(google::LogSeverity::$sev, line, file, fn_name)
+        let fn_name = $crate::function!();
+        crate::logger::LogBuilder::new($crate::LogSeverity::$sev, line, file, fn_name)
     }};
 }
 
 #[macro_export]
 macro_rules! log_debug {
     () => {
-        log!(Debug)
+        $crate::log!(Debug)
     };
 }
 
 #[macro_export]
 macro_rules! log_info {
     () => {
-        log!(Info)
+        $crate::log!(Info)
     };
 }
 
 #[macro_export]
 macro_rules! log_warn {
     () => {
-        log!(Warning)
+        $crate::log!(Warning)
     };
 }
 
 #[macro_export]
 macro_rules! log_error {
     () => {
-        log!(Error)
+        $crate::log!(Error)
     };
 }
 
 #[macro_export]
 macro_rules! log_critical {
     () => {
-        log!(Critical)
+        $crate::log!(Critical)
     };
 }
