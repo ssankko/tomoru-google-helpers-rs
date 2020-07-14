@@ -364,7 +364,7 @@ macro_rules! log {
         let line = line!() as i64;
         let file = file!();
         let fn_name = $crate::function!();
-        crate::logger::LogBuilder::new($crate::LogSeverity::$sev, line, file, fn_name)
+        $crate::logging::LogBuilder::new($crate::logging::LogSeverity::$sev, line, file, fn_name)
     }};
 }
 

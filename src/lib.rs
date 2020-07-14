@@ -1,23 +1,15 @@
 mod generated;
 #[cfg(feature = "stt")]
-mod stt;
-#[cfg(feature = "stt")]
-pub use stt::*;
+pub mod stt;
 
 #[cfg(feature = "tasks")]
-mod tasks;
-#[cfg(feature = "tasks")]
-pub use tasks::*;
+pub mod tasks;
 
 #[cfg(feature = "tts")]
-mod tts;
-#[cfg(feature = "tts")]
-pub use tts::*;
+pub mod tts;
 
 #[cfg(feature = "logging")]
-mod logging;
-#[cfg(feature = "logging")]
-pub use logging::*;
+pub mod logging;
 
 mod macros;
 use tonic::transport::{Channel, ClientTlsConfig};
