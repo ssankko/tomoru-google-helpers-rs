@@ -344,7 +344,7 @@ impl LogBuilder {
     }
 }
 
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! function {
     () => {{
         fn f() {}
@@ -356,7 +356,7 @@ macro_rules! function {
     }};
 }
 
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! log {
     ($sev: tt) => {{
         let line = line!() as i64;
