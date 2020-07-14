@@ -14,7 +14,7 @@ macro_rules! service {
 
         static SERVICE: OnceCell<Service> = OnceCell::new();
 
-        pub(super) async fn initialize<'a>(
+        pub(crate) async fn initialize<'a>(
             tls_config: ClientTlsConfig,
             key: &str,
         ) {
