@@ -3,8 +3,8 @@ crate::service!(
     "https://www.googleapis.com/auth/cloud-platform"
 );
 
-use crate::generated::google::cloud::texttospeech::v1::*;
-pub use crate::generated::google::cloud::texttospeech::v1::{AudioConfig, VoiceSelectionParams};
+use super::generated::google::cloud::texttospeech::v1::*;
+pub use super::generated::google::cloud::texttospeech::v1::{AudioConfig, VoiceSelectionParams};
 
 fn default_config() -> AudioConfig {
     AudioConfig {

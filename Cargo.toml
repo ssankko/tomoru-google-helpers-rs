@@ -1,6 +1,6 @@
 [package]
-name = "tomoru-google-helpers-rs"
-version = "0.1.5"
+name = "tomoru-helpers-rs"
+version = "0.2.0"
 authors = ["ssankko <literaamr@gmail.com>"]
 edition = "2018"
 
@@ -8,29 +8,38 @@ edition = "2018"
 
 [features]
 default = []
-tasks = []
-stt = []
-tts = []
-storage = []
-logging = ["tokio", "lazy_static", "chrono"]
-logging-hyper-requests = ["hyper", "futures"]
+google-tasks = ["_rpc", "_google"]
+google-stt = ["_rpc", "_google"]
+google-tts = ["_rpc", "_google"]
+google-logging = ["tokio", "lazy_static", "chrono", "serde", "_rpc", "_google"]
+google-logging-hyper-requests = ["hyper", "futures"]
+
+yandex-stt = ["_yandex"]
+yandex-streaming-stt = ["_yandex", "_rpc", "_streaming"]
+
+_rpc = ["prost", "prost-types", "tonic", "serde_json", "tokio-rustls", "webpki-roots", "once_cell"]
+_streaming = ["async-stream", "tokio"]
+_yandex = ["tokio", "reqwest", "jsonwebtoken", "serde", "once_cell", "chrono", "lazy_static"]
+_google = ["yup-oauth2"]
 
 [dependencies]
-yup-oauth2 = { version = "4.1.2" }
-serde = {version="1.0.114"}
-serde_json = {version = "1.0.56"}
-webpki-roots = "0.20.0"
-tokio-rustls = {version = "0.14"}
-tonic = {version = "0.3.0", features = ["tls", "prost"]}
-once_cell = "1.4.0"
-prost = "0.6"
-prost-types = "0.6"
-
+prost = {version ="0.6", optional = true}
+prost-types = {version = "0.6", optional = true}
+yup-oauth2 = { version = "4.1.2", optional = true}
+once_cell = {version ="1.4.0", optional = true}
+webpki-roots = {version = "0.20.0", optional = true}
+tokio-rustls = {version = "0.14", optional = true}
+tonic = {version = "0.3.0", features = ["tls", "prost"], optional = true}
+serde = {version="1.0.114", optional = true}
+serde_json = {version = "1.0.56", optional = true}
 tokio = {version = "0.2.21", optional = true}
 futures = {version ="0.3.5", optional = true}
 lazy_static = {version = "1.4.0", optional = true}
 hyper = {version = "0.13.7", optional = true}
-chrono = {version = "0.4.13", optional = true}
+chrono = {version = "0.4.13", features=["serde"], optional = true}
+reqwest = {version = "0.10.6", features = ["json"], optional = true}
+jsonwebtoken = {version = "7.2.0", optional = true}
+async-stream = {version = "0.2.1", optional = true}
 
 [build-dependencies]
 tonic-build = {version = "0.3.0", default-features = false, features = ["transport", "prost"]}

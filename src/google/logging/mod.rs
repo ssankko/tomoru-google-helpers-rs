@@ -96,7 +96,7 @@ impl Into<google::HttpRequest> for HttpRequest {
     }
 }
 
-#[cfg(feature = "logging-hyper-requests")]
+#[cfg(feature = "google-logging-hyper-requests")]
 impl From<hyper::Request<hyper::Body>> for HttpRequest {
     fn from(item: hyper::Request<hyper::Body>) -> Self {
         use futures::stream::Stream;
@@ -121,7 +121,7 @@ impl From<hyper::Request<hyper::Body>> for HttpRequest {
     }
 }
 
-#[cfg(feature = "logging-hyper-requests")]
+#[cfg(feature = "google-logging-hyper-requests")]
 impl From<&hyper::Request<hyper::Body>> for HttpRequest {
     fn from(item: &hyper::Request<hyper::Body>) -> Self {
         use futures::stream::Stream;
@@ -364,7 +364,12 @@ macro_rules! log {
         let line = line!() as i64;
         let file = file!();
         let fn_name = $crate::function!();
-        $crate::logging::LogBuilder::new($crate::logging::LogSeverity::$sev, line, file, fn_name)
+        $crate::google::logging::LogBuilder::new(
+            $crate::google::logging::LogSeverity::$sev,
+            line,
+            file,
+            fn_name,
+        )
     }};
 }
 

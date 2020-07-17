@@ -1,8 +1,8 @@
 crate::service!("logging", "https://www.googleapis.com/auth/cloud-platform");
-use crate::generated::google::logging::v2;
+use crate::google::generated::google::logging::v2;
 use std::collections::HashMap;
 
-pub use crate::generated::google::{
+pub use crate::google::generated::google::{
     api::MonitoredResource,
     logging::{
         r#type::HttpRequest,

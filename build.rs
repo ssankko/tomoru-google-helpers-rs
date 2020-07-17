@@ -1,26 +1,34 @@
 use std::{collections::HashMap, process::Command};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    if let Ok(_) = std::fs::File::open("./src/generated.rs") {
-        return Ok(());
+    #[cfg(feature = "_google")]
+    if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
+        tonic_build::configure().build_server(false).compile(
+            &[
+                "apis/google/logging/v2/logging.proto",
+                "apis/google/cloud/speech/v1/cloud_speech.proto",
+                "apis/google/cloud/texttospeech/v1/cloud_tts.proto",
+                "apis/google/cloud/tasks/v2beta3/cloudtasks.proto",
+            ],
+            &["apis/"],
+        )?;
+
+        place_in_src("google/generated");
     }
 
-    tonic_build::configure().build_server(false).compile(
-        &[
-            "googleapis/google/logging/v2/logging.proto",
-            "googleapis/google/cloud/speech/v1/cloud_speech.proto",
-            "googleapis/google/cloud/texttospeech/v1/cloud_tts.proto",
-            "googleapis/google/cloud/tasks/v2beta3/cloudtasks.proto",
-        ],
-        &["googleapis/"],
-    )?;
+    #[cfg(feature = "_yandex")]
+    if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
+        tonic_build::configure().build_server(false).compile(
+            &["apis/yandex/cloud/ai/stt/v2/stt_service.proto"],
+            &["apis/"],
+        )?;
 
-    place_in_src();
-
+        place_in_src("yandex/generated");
+    }
     Ok(())
 }
 
-fn place_in_src() {
+fn place_in_src(file_name: &str) {
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let files = std::fs::read_dir(&out_dir).unwrap();
     // extract file names from output directory
@@ -73,7 +81,7 @@ fn place_in_src() {
 
     let mut result = String::new();
     construct(Box::new(tree), &mut result, &out_dir);
-    std::fs::write("./src/generated.rs", result).unwrap();
+    std::fs::write(format!("./src/{}.rs", file_name), result).unwrap();
 
     if std::env::var("NO_FMT_ON_GENERATED").is_err() {
         let result = Command::new("rustfmt")
@@ -81,7 +89,7 @@ fn place_in_src() {
             .arg("files")
             .arg("--edition")
             .arg("2018")
-            .arg("./src/generated.rs")
+            .arg(format!("./src/{}.rs", file_name))
             .output();
 
         match result {

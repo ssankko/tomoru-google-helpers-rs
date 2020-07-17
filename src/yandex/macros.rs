@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! service {
     ($domain_name: literal, $($scope: literal),+) => {
-        use crate::{auth, Service};
+        use crate::yandex::{auth, Service};
         use once_cell::sync::OnceCell;
         use tonic::{
             metadata::MetadataValue,

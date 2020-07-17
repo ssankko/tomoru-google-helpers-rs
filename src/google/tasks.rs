@@ -2,7 +2,7 @@ crate::service!(
     "cloudtasks",
     "https://www.googleapis.com/auth/cloud-platform"
 );
-use crate::generated::google::cloud::tasks::v2beta3::*;
+use super::generated::google::cloud::tasks::v2beta3::*;
 use std::collections::HashMap;
 
 pub struct QueueSettings<'a> {

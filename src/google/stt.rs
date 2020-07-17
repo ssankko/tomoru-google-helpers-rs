@@ -1,6 +1,6 @@
 crate::service!("speech", "https://www.googleapis.com/auth/cloud-platform");
-pub use crate::generated::google::cloud::speech::v1::RecognitionConfig;
-use crate::generated::google::cloud::speech::v1::*;
+pub use super::generated::google::cloud::speech::v1::RecognitionConfig;
+use super::generated::google::cloud::speech::v1::*;
 
 fn default_config() -> RecognitionConfig {
     RecognitionConfig {
