@@ -1,9 +1,14 @@
 use std::{collections::HashMap, process::Command};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    #[cfg(feature = "_google")]
-    if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
-        tonic_build::configure().build_server(false).compile(
+    #[cfg(feature = "_rpc")]
+    let builder = tonic_build::configure().build_server(false);
+
+    #[cfg(all(feature = "_google", feature = "_rpc"))]
+    // if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
+    {
+        println!("building shit for google");
+        builder.clone().compile(
             &[
                 "apis/google/logging/v2/logging.proto",
                 "apis/google/cloud/speech/v1/cloud_speech.proto",
@@ -12,24 +17,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ],
             &["apis/"],
         )?;
+        println!("shit for google was built");
 
         place_in_src("google/generated");
     }
+    // }
 
-    #[cfg(feature = "_yandex")]
-    if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
-        tonic_build::configure().build_server(false).compile(
+    #[cfg(all(feature = "_yandex", feature = "_rpc"))]
+    // if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
+    {
+        std::thread::sleep(std::time::Duration::from_millis(20));
+        println!("building shit for yandex");
+        builder.compile(
             &["apis/yandex/cloud/ai/stt/v2/stt_service.proto"],
             &["apis/"],
         )?;
+        println!("shit for yandex was built");
 
         place_in_src("yandex/generated");
     }
+    // }
     Ok(())
 }
 
 fn place_in_src(file_name: &str) {
+    println!("file_name = {}", file_name);
     let out_dir = std::env::var("OUT_DIR").unwrap();
+    println!("out_dir = {}", out_dir);
     let files = std::fs::read_dir(&out_dir).unwrap();
     // extract file names from output directory
     let file_names = files
@@ -105,7 +119,10 @@ fn place_in_src(file_name: &str) {
         }
     }
 
-    std::fs::remove_dir_all(out_dir).unwrap();
+    for entry in std::fs::read_dir(out_dir).unwrap() {
+        let entry = entry.unwrap();
+        std::fs::remove_file(entry.path()).unwrap();
+    }
 }
 
 enum TreeEntry {
