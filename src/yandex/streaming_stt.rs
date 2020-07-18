@@ -92,10 +92,10 @@ pub async fn streaming_recognize(
         }
     };
 
-    let messages = service.streaming_recognize(stream).await.unwrap();
     let (result_sender, result_receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
+        let messages = service.streaming_recognize(stream).await.unwrap();
         let mut inner = messages.into_inner();
         while let Some(message) = inner.message().await.unwrap() {
             result_sender.send(message).unwrap();
