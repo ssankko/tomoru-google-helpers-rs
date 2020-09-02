@@ -7,7 +7,7 @@ lazy_static::lazy_static! {
 static CLIENT: OnceCell<Client> = OnceCell::new();
 
 pub async fn recognize(audio: Vec<u8>) -> Option<String> {
-    let client = CLIENT.get_or_init(|| Client::new());
+    let client = CLIENT.get_or_init(Client::new);
 
     let result = client
         .post(YANDEX_SHORT_STT_URL.clone())

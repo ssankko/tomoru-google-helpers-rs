@@ -8,7 +8,7 @@ use tonic::{
     transport::{Channel, ClientTlsConfig},
     Request,
 };
-pub use v2::{RecognitionConfig, StreamingRecognitionResponse};
+pub use v2::{RecognitionConfig, RecognitionSpec, StreamingRecognitionResponse};
 
 const DEFAULT_HOST: &str = concat!("https://", "stt.api.cloud", ".yandex.net");
 
@@ -25,8 +25,8 @@ pub(crate) async fn initialize<'a>(tls_config: ClientTlsConfig, folder_id: &'sta
             .unwrap(),
         folder_id,
     };
-    if let Err(_) = SERVICE.set(inner) {
-        panic!(concat!("Already initialized ", "stt.api.cloud", " service"));
+    if SERVICE.set(inner).is_err() {
+        panic!("Already initialized stt.api.cloud service");
     }
 }
 
@@ -38,10 +38,10 @@ fn default_config(folder_id: String) -> v2::RecognitionConfig {
             language_code: "ru-RU".to_owned(),
             profanity_filter: false,
             model: "general:rc".to_owned(),
-            partial_results: false,
+            partial_results: true,
             single_utterance: false,
             audio_channel_count: 1,
-            raw_results: false,
+            raw_results: true,
         }),
         folder_id,
     }
@@ -102,5 +102,5 @@ pub async fn streaming_recognize(
         }
     });
 
-    return (audio_sender, result_receiver);
+    (audio_sender, result_receiver)
 }

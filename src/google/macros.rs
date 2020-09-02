@@ -18,17 +18,16 @@ macro_rules! service {
             tls_config: ClientTlsConfig,
             key: &str,
         ) {
-            let inner = Service {
-                auth: auth(key, SCOPES).await,
-                channel: Channel::from_shared(DEFAULT_HOST)
-                    .unwrap()
-                    .tls_config(tls_config)
-                    .unwrap()
-                    .connect()
-                    .await
-                    .unwrap(),
-            };
-            if let Err(_) = SERVICE.set(inner) {
+            let channel = Channel::from_shared(DEFAULT_HOST)
+                .unwrap()
+                .tls_config(tls_config)
+                .unwrap()
+                .connect()
+                .await
+                .unwrap();
+            let auth = auth(key, SCOPES).await;
+            let inner = Service { channel, auth };
+            if SERVICE.set(inner).is_err() {
                 panic!(concat!("Already initialized ", $domain_name, " service"));
             }
         }
