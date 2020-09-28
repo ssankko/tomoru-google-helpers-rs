@@ -4,8 +4,6 @@ version = "0.2.0"
 authors = ["ssankko <literaamr@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [features]
 default = []
 google-tasks = ["_rpc", "_google"]
@@ -13,6 +11,7 @@ google-stt = ["_rpc", "_google"]
 google-tts = ["_rpc", "_google"]
 google-logging = ["tokio", "lazy_static", "chrono", "serde", "_rpc", "_google"]
 google-logging-hyper-requests = ["hyper", "futures"]
+google-spreadsheets = ["_google", "serde", "serde_json"]
 
 yandex-stt = ["_yandex"]
 yandex-streaming-stt = ["_yandex", "_rpc", "_streaming"]
@@ -26,20 +25,20 @@ _google = ["yup-oauth2"]
 prost = {version ="0.6", optional = true}
 prost-types = {version = "0.6", optional = true}
 yup-oauth2 = { version = "4.1.2", optional = true}
-once_cell = {version ="1.4.0", optional = true}
+once_cell = {version ="1.4.1", optional = true}
 webpki-roots = {version = "0.20.0", optional = true}
 tokio-rustls = {version = "0.14", optional = true}
-tonic = {version = "0.3.0", features = ["tls", "prost"], optional = true}
-serde = {version="1.0.114", optional = true}
-serde_json = {version = "1.0.56", optional = true}
-tokio = {version = "0.2.21", optional = true}
+tonic = {version = "0.3.1", features = ["tls", "prost"], optional = true}
+serde = {version="1.0.116", optional = true}
+serde_json = {version = "1.0.57", optional = true}
+tokio = {version = "0.2.22", optional = true}
 futures = {version ="0.3.5", optional = true}
 lazy_static = {version = "1.4.0", optional = true}
-hyper = {version = "0.13.7", optional = true}
-chrono = {version = "0.4.13", features=["serde"], optional = true}
-reqwest = {version = "0.10.6", features = ["json"], optional = true}
+hyper = {version = "0.13.8", optional = true}
+chrono = {version = "0.4.18", features=["serde"], optional = true}
+reqwest = {version = "0.10.8", features = ["json"], optional = true}
 jsonwebtoken = {version = "7.2.0", optional = true}
-async-stream = {version = "0.2.1", optional = true}
+async-stream = {version = "0.3.0", optional = true}
 
 [build-dependencies]
-tonic-build = {version = "0.3.0", default-features = false, features = ["transport", "prost"]}
+tonic-build = {version = "0.3.1", default-features = false, features = ["transport", "prost"]}

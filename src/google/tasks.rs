@@ -1,4 +1,4 @@
-crate::service!(
+crate::rpc_service!(
     "cloudtasks",
     "https://www.googleapis.com/auth/cloud-platform"
 );
@@ -26,8 +26,8 @@ pub struct TaskData<'a> {
     pub queue: QueueSettings<'a>,
 }
 
-pub async fn create_task<'a>(task: TaskData<'a>) -> Result<(), tonic::Status> {
-    let tasks = SERVICE.get().unwrap();
+pub async fn create_task(task: TaskData<'_>) -> Result<(), tonic::Status> {
+    let service = SERVICE.get().unwrap();
 
     let queue = task.queue.form_queue();
 
@@ -48,9 +48,8 @@ pub async fn create_task<'a>(task: TaskData<'a>) -> Result<(), tonic::Status> {
         ..CreateTaskRequest::default()
     };
 
-    let channel = tasks.channel.clone();
-
-    let token = tasks.auth.token(SCOPES).await.unwrap();
+    let channel = service.channel.clone();
+    let token = service.auth.token(SCOPES).await.unwrap();
     let bearer_token = format!("Bearer {}", token.as_str());
     let token = MetadataValue::from_str(&bearer_token).unwrap();
 

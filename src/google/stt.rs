@@ -1,4 +1,4 @@
-crate::service!("speech", "https://www.googleapis.com/auth/cloud-platform");
+crate::rpc_service!("speech", "https://www.googleapis.com/auth/cloud-platform");
 pub use super::generated::google::cloud::speech::v1::RecognitionConfig;
 use super::generated::google::cloud::speech::v1::*;
 
@@ -26,7 +26,7 @@ fn default_config() -> RecognitionConfig {
 }
 
 pub async fn recognize(uri: String, config: Option<RecognitionConfig>) -> Option<String> {
-    let stt = SERVICE.get().unwrap();
+    let service = SERVICE.get().unwrap();
     let config = config.unwrap_or_else(default_config);
     // --------------------------------
     // construct request
@@ -41,8 +41,8 @@ pub async fn recognize(uri: String, config: Option<RecognitionConfig>) -> Option
     // --------------------------------
     // retrieve token and construct channel
     // --------------------------------
-    let channel = stt.channel.clone();
-    let token = stt.auth.token(SCOPES).await.unwrap();
+    let channel = service.channel.clone();
+    let token = service.auth.token(SCOPES).await.unwrap();
     let bearer_token = format!("Bearer {}", token.as_str());
     let token = MetadataValue::from_str(&bearer_token).unwrap();
 

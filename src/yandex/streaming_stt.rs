@@ -81,7 +81,7 @@ pub async fn streaming_recognize(
             streaming_request: Some(v2::streaming_recognition_request::StreamingRequest::Config(
                 config,
             )),
-        };;
+        };
 
         while let Some(audio) = audio_receiver.recv().await {
             yield v2::StreamingRecognitionRequest {

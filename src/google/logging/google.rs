@@ -1,4 +1,4 @@
-crate::service!("logging", "https://www.googleapis.com/auth/cloud-platform");
+crate::rpc_service!("logging", "https://www.googleapis.com/auth/cloud-platform");
 use crate::google::generated::google::logging::v2;
 use std::collections::HashMap;
 
@@ -62,10 +62,7 @@ fn serde_json_value_to_proto_value(value: serde_json::Value) -> prost_types::Val
             serde_json::Value::String(v) => prost_types::value::Kind::StringValue(v),
             serde_json::Value::Array(v) => {
                 prost_types::value::Kind::ListValue(prost_types::ListValue {
-                    values: v
-                        .into_iter()
-                        .map(|x| serde_json_value_to_proto_value(x))
-                        .collect(),
+                    values: v.into_iter().map(serde_json_value_to_proto_value).collect(),
                 })
             }
             serde_json::Value::Object(v) => {

@@ -1,4 +1,4 @@
-crate::service!(
+crate::rpc_service!(
     "texttospeech",
     "https://www.googleapis.com/auth/cloud-platform"
 );
@@ -31,7 +31,7 @@ pub async fn synthesize(
     audio_config: Option<AudioConfig>,
     voice_params: Option<VoiceSelectionParams>,
 ) -> Result<Vec<u8>, tonic::Status> {
-    let tts = SERVICE.get().unwrap();
+    let service = SERVICE.get().unwrap();
     let audio_config = audio_config.unwrap_or_else(default_config);
     let voice_params = voice_params.unwrap_or_else(default_voice_params);
 
@@ -52,8 +52,8 @@ pub async fn synthesize(
     // --------------------------------
     // retrieve token and construct channel
     // --------------------------------
-    let channel = tts.channel.clone();
-    let token = tts.auth.token(SCOPES).await.unwrap();
+    let channel = service.channel.clone();
+    let token = service.auth.token(SCOPES).await.unwrap();
     let bearer_token = format!("Bearer {}", token.as_str());
     let token = MetadataValue::from_str(&bearer_token).unwrap();
 

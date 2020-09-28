@@ -5,38 +5,38 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let builder = tonic_build::configure().build_server(false);
 
     #[cfg(all(feature = "_google", feature = "_rpc"))]
-    // if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
-    {
-        println!("building shit for google");
-        builder.clone().compile(
-            &[
-                "apis/google/logging/v2/logging.proto",
-                "apis/google/cloud/speech/v1/cloud_speech.proto",
-                "apis/google/cloud/texttospeech/v1/cloud_tts.proto",
-                "apis/google/cloud/tasks/v2beta3/cloudtasks.proto",
-            ],
-            &["apis/"],
-        )?;
-        println!("shit for google was built");
+    if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
+        {
+            println!("building shit for google");
+            builder.clone().compile(
+                &[
+                    "apis/google/logging/v2/logging.proto",
+                    "apis/google/cloud/speech/v1/cloud_speech.proto",
+                    "apis/google/cloud/texttospeech/v1/cloud_tts.proto",
+                    "apis/google/cloud/tasks/v2beta3/cloudtasks.proto",
+                ],
+                &["apis/"],
+            )?;
+            println!("shit for google was built");
 
-        place_in_src("google/generated");
+            place_in_src("google/generated");
+        }
     }
-    // }
 
     #[cfg(all(feature = "_yandex", feature = "_rpc"))]
-    // if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
-    {
-        std::thread::sleep(std::time::Duration::from_millis(20));
-        println!("building shit for yandex");
-        builder.compile(
-            &["apis/yandex/cloud/ai/stt/v2/stt_service.proto"],
-            &["apis/"],
-        )?;
-        println!("shit for yandex was built");
+    if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
+        {
+            std::thread::sleep(std::time::Duration::from_millis(20));
+            println!("building shit for yandex");
+            builder.compile(
+                &["apis/yandex/cloud/ai/stt/v2/stt_service.proto"],
+                &["apis/"],
+            )?;
+            println!("shit for yandex was built");
 
-        place_in_src("yandex/generated");
+            place_in_src("yandex/generated");
+        }
     }
-    // }
     Ok(())
 }
 
@@ -67,7 +67,7 @@ fn place_in_src(file_name: &str) {
                 continue;
             }
 
-            if let None = current_branch.get(part) {
+            if current_branch.get(part).is_none() {
                 current_branch.insert(part.to_owned(), TreeEntry::Branch(Default::default()));
             }
             current_branch = current_branch.get_mut(part).unwrap();

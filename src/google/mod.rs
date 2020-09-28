@@ -12,7 +12,10 @@ pub mod tts;
 #[cfg(feature = "google-logging")]
 pub mod logging;
 
-use tonic::transport::{Channel, ClientTlsConfig};
+#[cfg(feature = "google-spreadsheets")]
+pub mod spreadsheets;
+
+use tonic::transport::ClientTlsConfig;
 use yup_oauth2::{authenticator::DefaultAuthenticator, ServiceAccountAuthenticator};
 
 pub struct RpcBuilder {
@@ -49,6 +52,11 @@ impl RpcBuilder {
     initialize_fn!(tasks, initialize_tasks);
     #[cfg(feature = "google-logging")]
     initialize_fn!(logging, initialize_logging);
+    #[cfg(feature = "google-spreadsheets")]
+    pub async fn initialize_spreadsheets(self) -> Self {
+        spreadsheets::initialize(self.key).await;
+        self
+    }
 }
 
 async fn auth(key: &str, scopes: &[&str]) -> DefaultAuthenticator {
@@ -63,9 +71,4 @@ async fn auth(key: &str, scopes: &[&str]) -> DefaultAuthenticator {
     // Плюс если появятся какие то ошибки, то они будут видны на старте
     let _ = auth.token(scopes).await.unwrap();
     auth
-}
-
-struct Service {
-    channel: Channel,
-    auth: DefaultAuthenticator,
 }
