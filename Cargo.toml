@@ -11,7 +11,7 @@ google-stt = ["_rpc", "_google"]
 google-tts = ["_rpc", "_google"]
 google-logging = ["tokio", "lazy_static", "chrono", "serde", "_rpc", "_google"]
 google-logging-hyper-requests = ["hyper", "futures"]
-google-spreadsheets = ["_google", "serde", "serde_json"]
+google-spreadsheets = ["_google", "serde", "serde_json", "once_cell", "reqwest"]
 
 yandex-stt = ["_yandex"]
 yandex-streaming-stt = ["_yandex", "_rpc", "_streaming"]
