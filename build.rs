@@ -5,7 +5,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let builder = tonic_build::configure().build_server(false);
 
     #[cfg(all(feature = "_google", feature = "_rpc"))]
-    if let Err(_) = std::fs::File::open("./src/google/generated.rs") {
+    if std::fs::File::open("./src/google/generated.rs").is_err() {
         {
             println!("building shit for google");
             builder.clone().compile(
@@ -87,7 +87,7 @@ fn place_in_src(file_name: &str) {
                 for (name, child) in branch {
                     result.push_str(&format!("pub mod {} {{", name));
                     construct(child, result, out_dir);
-                    result.push_str("}");
+                    result.push('}');
                 }
             }
         }

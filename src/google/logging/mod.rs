@@ -34,7 +34,7 @@ lazy_static::lazy_static! {
     static ref LOGGER_QUEUE: Mutex<Vec<LogEntry>> = {
         tokio::spawn(async {
             loop{
-                tokio::time::delay_for(Duration::from_secs(5)).await;
+                tokio::time::sleep(Duration::from_secs(5)).await;
                 let queue = LOGGER_QUEUE.lock().await.drain(..).collect();
                 let res = google::write_log(google::Log{
                     project_id: PROJECT_ID.get().unwrap(),
