@@ -1,6 +1,6 @@
 [package]
 name = "tomoru-helpers-rs"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["ssankko <literaamr@gmail.com>"]
 edition = "2018"
 
@@ -16,8 +16,7 @@ google-spreadsheets = ["_google", "serde", "serde_json", "once_cell", "reqwest"]
 yandex-stt = ["_yandex"]
 yandex-streaming-stt = ["_yandex", "_rpc", "_streaming"]
 
-business = []
-sys_info = ["systemstat"]
+health = ["systemstat"]
 
 _rpc = ["prost", "prost-types", "tonic", "serde_json", "tokio-rustls", "webpki-roots", "once_cell"]
 _streaming = ["async-stream", "tokio"]
