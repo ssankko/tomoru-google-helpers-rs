@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     #[cfg(all(feature = "_yandex", feature = "_rpc"))]
-    if let Err(_) = std::fs::File::open("./src/yandex/generated.rs") {
+    if std::fs::File::open("./src/yandex/generated.rs").is_err() {
         {
             std::thread::sleep(std::time::Duration::from_millis(20));
             println!("building shit for yandex");
@@ -77,8 +77,8 @@ fn place_in_src(file_name: &str) {
 
     // simple recursive function to construct mod tree based on a
     // tree built earlier
-    fn construct(tree_entry: Box<TreeEntry>, result: &mut String, out_dir: &str) {
-        match *tree_entry {
+    fn construct(tree_entry: &TreeEntry, result: &mut String, out_dir: &str) {
+        match tree_entry {
             TreeEntry::Node(node) => {
                 let contents = std::fs::read_to_string(&format!("{}/{}", out_dir, node)).unwrap();
                 result.push_str(&contents);
@@ -91,10 +91,10 @@ fn place_in_src(file_name: &str) {
                 }
             }
         }
-    };
+    }
 
     let mut result = String::new();
-    construct(Box::new(tree), &mut result, &out_dir);
+    construct(Box::new(tree).as_ref(), &mut result, &out_dir);
     std::fs::write(format!("./src/{}.rs", file_name), result).unwrap();
 
     if std::env::var("NO_FMT_ON_GENERATED").is_err() {
@@ -138,9 +138,9 @@ impl TreeEntry {
         }
     }
 
-    fn get(&mut self, part: &str) -> Option<&Box<TreeEntry>> {
+    fn get(&mut self, part: &str) -> Option<&TreeEntry> {
         match self {
-            TreeEntry::Branch(tree) => tree.get(part),
+            TreeEntry::Branch(tree) => tree.get(part).map(|x| x.as_ref()),
             _ => panic!(),
         }
     }
