@@ -11,13 +11,13 @@ pub mod stt;
 #[cfg(feature = "_rpc")]
 pub struct RpcBuilder {
     tls_config: ClientTlsConfig,
-    folder_id: &'static str,
+    folder_id: String,
 }
 
 macro_rules! initialize_fn {
     ($name: ident, $fun_name: ident) => {
         pub async fn $fun_name(self) -> RpcBuilder {
-            $name::initialize(self.tls_config.clone(), self.folder_id).await;
+            $name::initialize(self.tls_config.clone(), self.folder_id.clone()).await;
             self
         }
     };
@@ -25,7 +25,7 @@ macro_rules! initialize_fn {
 
 #[cfg(feature = "_rpc")]
 impl RpcBuilder {
-    pub async fn new(key: &'static str, folder_id: &'static str) -> RpcBuilder {
+    pub async fn new(key: &[u8], folder_id: String) -> RpcBuilder {
         let mut tls_config = tokio_rustls::rustls::ClientConfig::new();
         tls_config
             .root_store
@@ -54,5 +54,5 @@ impl RpcBuilder {
 #[cfg(feature = "_rpc")]
 struct Service {
     channel: Channel,
-    folder_id: &'static str,
+    folder_id: String,
 }

@@ -18,22 +18,22 @@ pub mod spreadsheets;
 use tonic::transport::ClientTlsConfig;
 use yup_oauth2::{authenticator::DefaultAuthenticator, ServiceAccountAuthenticator};
 
-pub struct RpcBuilder {
+pub struct RpcBuilder<'a> {
     tls_config: ClientTlsConfig,
-    key: &'static str,
+    key: &'a str,
 }
 
 macro_rules! initialize_fn {
     ($name: ident, $fun_name: ident) => {
-        pub async fn $fun_name(self) -> RpcBuilder {
+        pub async fn $fun_name(self) -> RpcBuilder<'a> {
             $name::initialize(self.tls_config.clone(), self.key).await;
             self
         }
     };
 }
 
-impl RpcBuilder {
-    pub fn new(key: &'static str) -> RpcBuilder {
+impl<'a> RpcBuilder<'a> {
+    pub fn new(key: &'a str) -> RpcBuilder {
         let mut tls_config = tokio_rustls::rustls::ClientConfig::new();
         tls_config
             .root_store
@@ -53,7 +53,7 @@ impl RpcBuilder {
     #[cfg(feature = "google-logging")]
     initialize_fn!(logging, initialize_logging);
     #[cfg(feature = "google-spreadsheets")]
-    pub async fn initialize_spreadsheets(self) -> Self {
+    pub async fn initialize_spreadsheets(self) -> RpcBuilder<'a> {
         spreadsheets::initialize(self.key).await;
         self
     }

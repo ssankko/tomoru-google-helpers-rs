@@ -14,7 +14,7 @@ const DEFAULT_HOST: &str = concat!("https://", "stt.api.cloud", ".yandex.net");
 
 static SERVICE: OnceCell<Service> = OnceCell::new();
 
-pub(crate) async fn initialize<'a>(tls_config: ClientTlsConfig, folder_id: &'static str) {
+pub(crate) async fn initialize<'a>(tls_config: ClientTlsConfig, folder_id: String) {
     let inner = Service {
         channel: Channel::from_shared(DEFAULT_HOST)
             .unwrap()

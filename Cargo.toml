@@ -9,7 +9,7 @@ default = []
 google-tasks = ["_rpc", "_google"]
 google-stt = ["_rpc", "_google"]
 google-tts = ["_rpc", "_google"]
-google-logging = ["tokio", "lazy_static", "chrono", "serde", "_rpc", "_google"]
+google-logging = ["tokio", "chrono", "serde", "_rpc", "_google"]
 google-logging-hyper-requests = ["hyper", "futures"]
 google-spreadsheets = ["_google", "serde", "serde_json", "once_cell", "reqwest"]
 
@@ -20,7 +20,7 @@ health = ["systemstat"]
 
 _rpc = ["prost", "prost-types", "tonic", "serde_json", "tokio-rustls", "webpki-roots", "once_cell"]
 _streaming = ["async-stream", "tokio"]
-_yandex = ["tokio", "reqwest", "jsonwebtoken", "serde", "once_cell", "chrono", "lazy_static"]
+_yandex = ["tokio", "reqwest", "jsonwebtoken", "serde", "once_cell", "chrono"]
 _google = ["yup-oauth2"]
 
 
@@ -36,7 +36,6 @@ serde = {version="1.0", optional = true}
 serde_json = {version = "1.0", optional = true}
 tokio = {version = "1", optional = true}
 futures = {version ="0.3", optional = true}
-lazy_static = {version = "1.4.0", optional = true}
 hyper = {version = "0.14", optional = true}
 chrono = {version = "0.4", features=["serde"], optional = true}
 reqwest = {version = "0.11", features = ["json"], optional = true}

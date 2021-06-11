@@ -1,9 +1,9 @@
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use reqwest::Client;
 
-lazy_static::lazy_static! {
-    static ref YANDEX_SHORT_STT_URL: reqwest::Url = reqwest::Url::parse("https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?topic=general:rc&format=lpcm&sampleRateHertz=8000").unwrap();
-}
+static YANDEX_SHORT_STT_URL: Lazy<reqwest::Url> = Lazy::new(|| {
+    reqwest::Url::parse("https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?topic=general:rc&format=lpcm&sampleRateHertz=8000").unwrap()
+});
 static CLIENT: OnceCell<Client> = OnceCell::new();
 
 pub async fn recognize(audio: Vec<u8>) -> Option<String> {

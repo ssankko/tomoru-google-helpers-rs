@@ -23,11 +23,11 @@ pub struct Timestamp {
     nanos: i32,
 }
 
-impl Into<prost_types::Timestamp> for Timestamp {
-    fn into(self) -> prost_types::Timestamp {
+impl From<Timestamp> for prost_types::Timestamp {
+    fn from(val: Timestamp) -> Self {
         prost_types::Timestamp {
-            seconds: self.seconds,
-            nanos: self.nanos,
+            seconds: val.seconds,
+            nanos: val.nanos,
         }
     }
 }
@@ -72,9 +72,9 @@ fn serde_json_value_to_proto_value(value: serde_json::Value) -> prost_types::Val
     }
 }
 
-impl Into<v2::log_entry::Payload> for Payload {
-    fn into(self) -> v2::log_entry::Payload {
-        match self {
+impl From<Payload> for v2::log_entry::Payload {
+    fn from(val: Payload) -> Self {
+        match val {
             Payload::Text(text) => v2::log_entry::Payload::TextPayload(text),
             Payload::Json(map) => {
                 v2::log_entry::Payload::JsonPayload(serde_map_to_proto_fields(map))
@@ -128,16 +128,16 @@ pub struct LogEntry {
     pub http_request: Option<HttpRequest>,
 }
 
-impl Into<v2::LogEntry> for LogEntry {
-    fn into(self) -> v2::LogEntry {
+impl From<LogEntry> for v2::LogEntry {
+    fn from(val: LogEntry) -> Self {
         v2::LogEntry {
-            timestamp: Some(self.timestamp.into()),
-            severity: self.severity as i32,
-            http_request: self.http_request,
-            labels: self.labels,
-            operation: self.operation,
-            source_location: Some(self.source_code_entry),
-            payload: Some(self.payload.into()),
+            timestamp: Some(val.timestamp.into()),
+            severity: val.severity as i32,
+            http_request: val.http_request,
+            labels: val.labels,
+            operation: val.operation,
+            source_location: Some(val.source_code_entry),
+            payload: Some(val.payload.into()),
             ..Default::default()
         }
     }

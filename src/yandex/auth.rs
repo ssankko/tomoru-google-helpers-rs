@@ -11,17 +11,11 @@ struct Claims<'t> {
     exp: u64,
 }
 
-// lazy_static::lazy_static! {
-//     static ref YANDEX_KEY: EncodingKey = EncodingKey::from_rsa_pem(
-//         option_env!("SOFTPHONE_YANDEX_KEY").unwrap().as_bytes()
-//     ).unwrap();
-// }
-
 static YANDEX_KEY: OnceCell<EncodingKey> = OnceCell::new();
 
-pub(super) async fn initialize_auth(key: &str) {
+pub(super) async fn initialize_auth(key: &[u8]) {
     YANDEX_KEY
-        .set(EncodingKey::from_rsa_pem(key.as_bytes()).unwrap())
+        .set(EncodingKey::from_rsa_pem(key).unwrap())
         .unwrap();
     get_auth_token().await;
 }

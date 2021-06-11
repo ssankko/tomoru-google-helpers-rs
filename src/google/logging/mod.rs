@@ -1,7 +1,7 @@
 mod google;
 pub use google::*;
 
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, option::Option, string::String, time::Duration};
 use tokio::sync::Mutex;
 
@@ -30,27 +30,26 @@ pub fn describe_current_resource(
         .unwrap();
 }
 
-lazy_static::lazy_static! {
-    static ref LOGGER_QUEUE: Mutex<Vec<LogEntry>> = {
-        tokio::spawn(async {
-            loop{
-                tokio::time::sleep(Duration::from_secs(5)).await;
-                let queue = LOGGER_QUEUE.lock().await.drain(..).collect();
-                let res = google::write_log(google::Log{
-                    project_id: PROJECT_ID.get().unwrap(),
-                    log_name: LOG_NAME.get().unwrap(),
-                    resource: CURRENT_RESOURCE.get().cloned(),
-                    labels: Default::default(),
-                    entries: queue,
-                }).await;
-                if let Err(e) = res {
-                    eprintln!("[GOOGLE LOGGER] Failed to write log: {}", e);
-                }
+static LOGGER_QUEUE: Lazy<Mutex<Vec<LogEntry>>> = Lazy::new(|| {
+    tokio::spawn(async {
+        loop {
+            tokio::time::sleep(Duration::from_secs(5)).await;
+            let queue = LOGGER_QUEUE.lock().await.drain(..).collect();
+            let res = google::write_log(google::Log {
+                project_id: PROJECT_ID.get().unwrap(),
+                log_name: LOG_NAME.get().unwrap(),
+                resource: CURRENT_RESOURCE.get().cloned(),
+                labels: Default::default(),
+                entries: queue,
+            })
+            .await;
+            if let Err(e) = res {
+                eprintln!("[GOOGLE LOGGER] Failed to write log: {}", e);
             }
-        });
-        Mutex::new(Vec::with_capacity(32))
-    };
-}
+        }
+    });
+    Mutex::new(Vec::with_capacity(32))
+});
 
 pub struct HttpRequest {
     /// The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`, `"POST"`.
@@ -80,17 +79,17 @@ pub struct HttpRequest {
     pub protocol: String,
 }
 
-impl Into<google::HttpRequest> for HttpRequest {
-    fn into(self) -> google::HttpRequest {
+impl From<HttpRequest> for google::HttpRequest {
+    fn from(val: HttpRequest) -> Self {
         google::HttpRequest {
-            request_method: self.request_method,
-            request_url: self.request_url,
-            request_size: self.request_size,
-            user_agent: self.user_agent,
-            remote_ip: self.remote_ip.unwrap_or_default(),
-            referer: self.referer,
-            latency: self.latency.map(|x| x.into()),
-            protocol: self.protocol,
+            request_method: val.request_method,
+            request_url: val.request_url,
+            request_size: val.request_size,
+            user_agent: val.user_agent,
+            remote_ip: val.remote_ip.unwrap_or_default(),
+            referer: val.referer,
+            latency: val.latency.map(|x| x.into()),
+            protocol: val.protocol,
             ..Default::default()
         }
     }
@@ -199,9 +198,9 @@ impl LogContext {
     }
 }
 
-impl Into<LogContext> for &LogContext {
-    fn into(self) -> LogContext {
-        self.clone()
+impl From<&LogContext> for LogContext {
+    fn from(val: &LogContext) -> Self {
+        val.clone()
     }
 }
 

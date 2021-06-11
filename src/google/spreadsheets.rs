@@ -517,38 +517,38 @@ pub struct AppendValuesResponse {
 /// it does not influence what cell the data starts being written to.
 pub async fn append<'a>(params: AppendParams<'_>) -> Result<AppendValuesResponse, String> {
     // POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values/{range}:append
-    let mut query_params = Vec::with_capacity(6);
-
-    query_params.push((
-        "valueInputOption",
-        params.value_input_option.unwrap_or_default().to_string(),
-    ));
-    query_params.push((
-        "includeValuesInResponse",
-        params
-            .include_values_in_response
-            .unwrap_or_default()
-            .to_string(),
-    ));
-    query_params.push((
-        "insertDataOption",
-        params.insert_data_option.unwrap_or_default().to_string(),
-    ));
-    query_params.push((
-        "responseDateTimeRenderOption",
-        params
-            .response_date_time_render_option
-            .unwrap_or_default()
-            .to_string(),
-    ));
-    query_params.push((
-        "responseValueRenderOption",
-        params
-            .response_value_render_option
-            .unwrap_or_default()
-            .to_string(),
-    ));
-    query_params.push(("alt", "json".to_string()));
+    let query_params = vec![
+        (
+            "valueInputOption",
+            params.value_input_option.unwrap_or_default().to_string(),
+        ),
+        (
+            "includeValuesInResponse",
+            params
+                .include_values_in_response
+                .unwrap_or_default()
+                .to_string(),
+        ),
+        (
+            "insertDataOption",
+            params.insert_data_option.unwrap_or_default().to_string(),
+        ),
+        (
+            "responseDateTimeRenderOption",
+            params
+                .response_date_time_render_option
+                .unwrap_or_default()
+                .to_string(),
+        ),
+        (
+            "responseValueRenderOption",
+            params
+                .response_value_render_option
+                .unwrap_or_default()
+                .to_string(),
+        ),
+        ("alt", "json".to_string()),
+    ];
 
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}:append",
